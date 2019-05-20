@@ -1,39 +1,26 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title></title>
-  </head>
-  <body>
-    <div>
-      <h2>Current Intervals</h2>
-      <?php
-      $query = 'SELECT date_start, date_end, price FROM intervals order by date_start';
-$db_host = 'localhost';
-$db_user = 'root';
-$db_pass = 'password';
-$db_dbnm = 'pricing';
+<?php
 
-$db = new mysqli($db_host, $db_user, $db_pass, $db_dbnm);
+require 'Interval.php';
+require 'MysqlConn.php';
+require 'Formatter.php';
 
-$stmn = $db->prepare($query);
+$url = $_SERVER['REDIRECT_URL'];
+$method = $_SERVER['REQUEST_METHOD'];
+echo $_SERVER['CONTENT_TYPE'];
 
-$stmn->execute();
+$conn = new MysqlConn();
+$interval = new Interval($conn);
 
-$stmn->bind_result($date_start, $date_end, $amount);
-
-while($stmn->fetch())
-  printf("( %s - %s ) : %s <br/>", $date_start, $date_end, $amount);
-
-$stmn->close();
-
-$db->close();
-?>
-    </div>
-    <form action='save.php' method="post">
-      <input type="text" name='date_start' />
-      <input type="text" name='date_end' />
-      <input type="text" name='date_price' />
-      <input type="submit" name='submit' value='Crear' />
-    </form>
-  </body>
-</html>
+switch ($url) {
+  case '/intervals':
+    if($method == 'GET') {
+      $intervals = $interval->get_all();
+      $format = new Formatter($intervals);
+      echo ($format->json());
+      die();
+    }
+    break;
+  default:
+    #return 404;
+    break;
+}
