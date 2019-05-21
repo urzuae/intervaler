@@ -11,6 +11,7 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 $conn = new MysqlConn();
 $interval = new Interval($conn);
+$url = str_replace("/freelance/intervals", "", $url);
 
 switch ($url) {
   case '/intervals':
@@ -24,7 +25,7 @@ switch ($url) {
       $param = new Params();
       $params = $param->get_params();
       $interval->add($params['date_start'], $params['date_end'], $params['price']);
-      http_response_code(201);
+      http_response_code(204);
     }
     break;
   case (preg_match('/\/interval\/(\d+)/', $url, $match) ? true : false) :

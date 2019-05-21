@@ -1,9 +1,22 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title></title>
+    <title>Intervals</title>
+    <style type="text/css">
+      label {
+        display:inline-block;
+        width: 150px;
+      }
+      input[type="text"], input[type="date"] {
+        width: 150px;
+      }
+      #update_interval {
+        display:none;
+      }
+    </style>
     <script type="text/javascript" src="jquery.js"></script>
     <script type="text/javascript">
+      var _url = '';
       $(document).ready(function() {
         fill_entries();
 
@@ -12,7 +25,7 @@
           var id = $(this).data('id');
           if(confirm('Are you sure to delete this entry?')) {
             $.ajax({
-              url: '/interval/'+id,
+              url: _url+'/interval/'+id,
               type: 'delete',
               dataType: 'json',
               success: function(response) {
@@ -25,6 +38,7 @@
 
         $(document).on('click', '.edit', function(e) {
           e.preventDefault();
+          $('#update_interval').show();
 
           var $id = $(this).data('id');
           var $start_date = $(this).data('start');
@@ -40,7 +54,7 @@
           e.preventDefault();
           var data = $(this).serialize();
           $.ajax({
-            url: '/intervals',
+            url: _url+'/intervals',
             data: data,
             type: 'post',
             dataType: 'json',
@@ -56,11 +70,12 @@
           var data = $(this).serialize();
           var id = $('#update_id').val();
           $.ajax({
-            url: '/interval/'+id,
+            url: _url+'/interval/'+id,
             data: data,
             type: 'patch',
             dataType: 'json',
             success: function(response) {
+              $('#update_interval').hide();
               fill_entries();
             }
           });
@@ -70,7 +85,7 @@
 
       function fill_entries() {
         $.ajax({
-          url: '/intervals',
+          url: _url+'/intervals',
           type: 'get',
           dataType: 'json',
           success: function(response) {
@@ -83,7 +98,7 @@
               row += '<td>'+interval.date_start+'</td>';
               row += '<td>'+interval.date_end+'</td>';
               row += '<td>'+interval.price+'</td>';
-              row += '<td><span class="delete" data-id="'+interval.id+'">Delete</span>';
+              row += '<td><span class="delete" data-id="'+interval.id+'">Delete</span> ';
               row += '<span class="edit" data-id="'+interval.id+'" data-start="'+interval.date_start+'"';
               row += 'data-end="'+interval.date_end+'">Edit</span></td>';
               row += '</tr>';
@@ -114,18 +129,18 @@
     <br/>
     <form id="new_interval">
       <h2>Create interval</h2>
-      Start Date: <input type="text" name='date_start' /><br>
-      End Date: <input type="text" name='date_end' /><br>
-      Price: <input type="text" name='price' /><br>
+      <label>Start Date:</label> <input type="date" name='date_start' /><br>
+      <label>End Date:</label> <input type="date" name='date_end' /><br>
+      <label>Price:</label> <input type="text" name='price' /><br>
       <input type="submit" name='submit' value='Create' />
     </form>
 
     <form id="update_interval">
       <h2>Update Interval</h2>
       <input type="hidden" id='update_id' name="id"><br>
-      Start Date: <input type="text" id="start_date" disabled><br>
-      End Date: <input type="text" id="end_date" disabled><br>
-      Price: <input type="text" name="price" id="update_price"><br>
+      <label>Start Date:</label> <input type="text" id="start_date" disabled><br>
+      <label>End Date:</label> <input type="text" id="end_date" disabled><br>
+      <label>Price:</label> <input type="text" name="price" id="update_price"><br>
       <input type="submit" name='submit' value='Update' />
     </form>
   </body>
