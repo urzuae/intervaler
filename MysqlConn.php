@@ -45,6 +45,24 @@ class MysqlConn implements DBInterface
     $new_entry->close();
   }
 
+  public function delete($id)
+  {
+    $query = "DELETE FROM intervals where id = ?";
+    $del_entry = $this->connection->prepare($query);
+    $del_entry->bind_param("i", $id);
+    $del_entry->execute();
+    $del_entry->close();
+  }
+
+  public function update($id, $price)
+  {
+    $query = "UPDATE intervals SET price = ? WHERE id = ?";
+    $upd_entry = $this->connection->prepare($query);
+    $upd_entry->bind_param("di", $price, $id);
+    $upd_entry->execute();
+    $upd_entry->close();
+  }
+
   public function delete_outer($start_date, $end_date)
   {
     $query = "DELETE FROM intervals WHERE date_start <= ? AND ? <= date_end";
